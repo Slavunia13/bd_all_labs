@@ -1,0 +1,100 @@
+[
+    {
+        "product_name": "Смартфон XYZ",
+        "manufacturer": "XYZ Corp",
+        "price": 599.99,
+        "features": {
+            "screen_size": "6.5 дюймов",
+            "battery_capacity": "4500 мАч",
+            "camera": "48 МП",
+            "storage_options": ["64 ГБ", "128 ГБ", "256 ГБ"]
+        },
+        "customers": [
+            {
+                "name": "Иван Иванов",
+                "purchase_date": "2023-10-01",
+                "review": "Отличный телефон, рекомендую!",
+                "delivery_service": "СДЭК"
+            },
+            {
+                "name": "Мария Петрова",
+                "purchase_date": "2023-10-05",
+                "review": "Хорошая камера, но батарея могла бы быть лучше.",
+                "delivery_service": "Почта России"
+            }
+        ]
+    },
+    {
+        "product_name": "Ноутбук ABC",
+        "manufacturer": "ABC Inc",
+        "price": 1099.99,
+        "features": {
+            "screen_size": "15.6 дюймов",
+            "processor": "Intel i7",
+            "ram": "16 ГБ",
+            "storage": "512 ГБ SSD"
+        },
+        "customers": [
+            {
+                "name": "Сергей Смирнов",
+                "purchase_date": "2023-09-20",
+                "review": "Отличная производительность для работы.",
+                "delivery_service": "Доставка 24"
+            }
+        ]
+    },
+    {
+        "product_name": "Умные часы QRS",
+        "manufacturer": "QRS Tech",
+        "price": 199.99,
+        "features": {
+            "water_resistant": true,
+            "battery_life": "7 дней",
+            "compatible_os": ["iOS", "Android"]
+        },
+        "customers": [
+            {
+                "name": "Анна Кузнецова",
+                "purchase_date": "2023-10-10",
+                "review": "Удобные и стильные часы.",
+                "delivery_service": "Boxberry"
+            }
+        ]
+    },
+    {
+        "product_name": "Наушники DEF",
+        "manufacturer": "DEF Audio",
+        "price": 89.99,
+        "features": {
+            "type": "беспроводные",
+            "battery_life": "20 часов",
+            "noise_cancellation": true
+        },
+        "customers": [
+            {
+                "name": "Дмитрий Васильев",
+                "purchase_date": "2023-10-15",
+                "review": "Отличное качество звука!",
+                "delivery_service": "СДЭК"
+            }
+        ]
+    },
+    {
+        "product_name": "Кофеварка GHI",
+        "manufacturer": "GHI Home",
+        "price": 149.99,
+        "features": {
+            "capacity": "1.5 литра",
+            "type": "капельная",
+            "auto_shutdown": true
+        },
+        "customers": [
+            {
+                "name": "Елена Федорова",
+                "purchase_date": "2023-10-12",
+                "review": "Готовит отличный кофе, очень довольна.",
+                "delivery_service": "Почта России"
+            }
+        ]
+    }
+]

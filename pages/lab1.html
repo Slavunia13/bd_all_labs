@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки текста</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1, h2 {
+            color: #4CAF50;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 98%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-color: #4CAF50;
+        }
+        select {
+            width: 100%;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border: 2px solid #ccc;
+            border-color: #45a049;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #formattedText {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Настройки текста</h1>
+
+    <h2>Сохранение настроек пользователя</h2>
+    <label for="username">Имя пользователя:</label>
+    <input type="text" id="username" placeholder="Введите имя пользователя">
+
+    <label for="fontSelect">Выберите шрифт:</label>
+    <select id="fontSelect"></select>
+
+    <label for="fontSize">Размер шрифта:</label>
+    <input type="text" id="fontSize" placeholder="12">
+
+    <label for="fontColor">Цвет шрифта:</label>
+    <input type="text" id="fontColor" placeholder="#000000">
+
+    <label for="fontStyle">Начертание:</label>
+    <input type="text" id="fontStyle" placeholder="normal">
+
+    <button id="saveSettings">Сохранить настройки</button>
+
+    <h2>Ввод текста</h2>
+    <label for="textInput">Текст:</label>
+    <input type="text" id="textInput" placeholder="Введите текст">
+
+    <label for="userSelect">Выберите пользователя:</label>
+    <select id="userSelect"></select>
+
+    <button id="formatText">Форматировать текст</button>
+
+    <h2>Отформатированный текст</h2>
+    <div id="formattedText"></div>
+</div>
+
+<script>
+    const apiUrl = 'http://localhost/api/v1';
+
+    document.getElementById('saveSettings').addEventListener('click', async () => {
+        const username = document.getElementById('username').value;
+        const fontName = document.getElementById('fontSelect').value;
+        const fontSize = document.getElementById('fontSize').value;
+        const fontColor = document.getElementById('fontColor').value;
+        const fontStyle = document.getElementById('fontStyle').value;
+
+        const response = await fetch(`${apiUrl}/users/${username}/settings`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ font_name: fontName, font_size: fontSize, font_color: fontColor, font_style: fontStyle }),
+        });
+
+        if (response.ok) {
+            alert('Настройки сохранены!');
+            loadUsers(); // Обновляем список пользователей
+        } else {
+            alert('Ошибка при сохранении настроек.');
+        }
+    });
+
+    document.getElementById('formatText').addEvent
+    document.getElementById('formatText').addEventListener('click', async () => {
+        const username = document.getElementById('userSelect').value;
+        const text = document.getElementById('textInput').value;
+
+        const response = await fetch(`${apiUrl}/users/${username}/text`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('formattedText').innerHTML = data.formatted_text;
+        } else {
+            alert('Ошибка при форматировании текста.');
+        }
+    });
+
+    async function loadUsers() {
+        const response = await fetch(`${apiUrl}/users`);
+        const users = await response.json();
+        const userSelect = document.getElementById('userSelect');
+        userSelect.innerHTML = ''; // Очищаем текущий список
+
+        users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user;
+            option.textContent = user;
+            userSelect.appendChild(option);
+        });
+    }
+
+    async function loadFonts() {
+        const response = await fetch(`${apiUrl}/fonts`);
+        const data = await response.json();
+        const fontSelect = document.getElementById('fontSelect');
+        fontSelect.innerHTML = ''; // Очищаем текущий список
+
+        data.fonts.forEach(font => {
+            const option = document.createElement('option');
+            option.value = font;
+            option.textContent = font;
+            fontSelect.appendChild(option);
+        });
+    }
+
+    // Загружаем пользователей и шрифты при загрузке страницы
+    window.onload = async () => {
+        await loadUsers();
+        await loadFonts();
+    };
+</script>
+
+</body>
+</html>

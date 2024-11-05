@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Панель управления администратором</title>
+	<style>
+	h1,
+	h2 {
+		color: #4CAF50;
+	}
+	
+	label {
+		display: block;
+		margin: 10px 0 5px;
+		font-weight: bold;
+	}
+	
+	input,
+	select {
+		width: 98%;
+		padding: 10px;
+		margin-bottom: 20px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		border-color: #4CAF50;
+	}
+	
+	select {
+		width: 100%;
+	}
+	
+	input:focus,
+	select:focus {
+		outline: none;
+		border: 2px solid #ccc;
+		border-color: #45a049;
+	}
+	
+	button {
+		padding: 10px 15px;
+		background-color: #4CAF50;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: background-color 0.3s;
+	}
+	
+	button:hover {
+		background-color: #45a049;
+	}
+	
+	.container {
+		max-width: 1000px;
+		margin: auto;
+		background: white;
+		padding: 20px;
+		border-radius: 8px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	}
+	
+	.list-item {
+		display: flex;
+	}
+	
+	.list-item button {
+		margin-left: auto;
+	}
+	
+	.section {
+		margin-bottom: 40px;
+	}
+	
+	.actions {
+		display: flex;
+		justify-content: space-between;
+	}
+	
+	.list-item {
+		border: 1px solid #ddd;
+		padding: 10px;
+		margin-top: 10px;
+	}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h1>Панель управления футбольными матчами</h1>
+		<!-- Раздел Игроки -->
+		<div class="section">
+			<h2>Управление игроками</h2>
+			<label>Полное имя</label>
+			<input type="text" id="player-full-name" placeholder="Полное имя игрока">
+			<label>Позиция</label>
+			<input type="text" id="player-position" placeholder="Позиция (например, Нападающий, Полузащитник)">
+			<button onclick="createPlayer()">Добавить игрока</button>
+			<div id="players-list" class="list"></div>
+		</div>
+		<!-- Раздел Команды -->
+		<div class="section">
+			<h2>Управление командами</h2>
+			<label>Название команды</label>
+			<input type="text" id="team-name" placeholder="Название команды">
+			<label>Город</label>
+			<input type="text" id="team-city" placeholder="Город">
+			<label>Тренер</label>
+			<input type="text" id="team-coach" placeholder="Имя тренера">
+			<label>Выберите игрока для стартового состава</label>
+			<select id="player-select">
+				<option value="">Выберите игрока</option>
+			</select>
+			<button onclick="addPlayerToStartingLineup()">Добавить в стартовый состав</button>
+			<label>Стартовый состав (ID игроков, через запятую)</label>
+			<input type="text" id="team-starting-lineup" placeholder="ID игроков стартового состава" readonly>
+			<label>Выберите игрока для запасных</label>
+			<select id="substitute-player-select">
+				<option value="">Выберите игрока</option>
+			</select>
+			<button onclick="addPlayerToSubstitutes()">Добавить в запасные</button>
+			<label>Запасные (ID игроков, через запятую)</label>
+			<input type="text" id="team-substitutes" placeholder="ID запасных игроков" readonly>
+			<button onclick="createTeam()">Добавить команду</button>
+			<div id="teams-list" class="list"></div>
+		</div>
+		<!-- Раздел Матчи -->
+		<div class="section">
+			<h2>Управление матчами</h2>
+			<label>Дата</label>
+			<input type="text" id="match-date" placeholder="Дата (например, 2024-11-05)">
+			<label>Команды (ID команд, через запятую)</label>
+			<input type="text" id="match-teams" placeholder="Два ID команд, разделённых запятой">
+			<label>Счёт</label>
+			<input type="text" id="match-score" placeholder="Счёт (например, 2-1)">
+			<label>Голы (формат JSON)</label>
+			<textarea id="match-goals" style='width: 100%;' placeholder='Пример: [{"author_id": "id1", "position": "Нападающий", "minute": 45, "assist_id": "id2"}]'></textarea>
+			<button onclick="createMatch()">Добавить матч</button>
+			<div id="matches-list" class="list"></div>
+		</div>
+	</div>
+	<script>
+	const apiUrl = 'http://localhost/api/v1';
+	// Helper to handle fetch errors
+	async function fetchData(url, options = {}) {
+		try {
+			const response = await fetch(url, options);
+			if(!response.ok) throw new Error(await response.text());
+			return response.json();
+		} catch(error) {
+			alert(`Error: ${error.message}`);
+		}
+	}
+	// Fetch and render lists
+	async function refreshLists() {
+		await renderPlayers();
+		await renderTeams();
+		await renderMatches();
+	}
+	// Players
+	async function createPlayer() {
+		const fullName = document.getElementById("player-full-name").value;
+		const position = document.getElementById("player-position").value;
+		const player = {
+			full_name: fullName,
+			position
+		};
+		await fetchData(`${apiUrl}/players/`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(player)
+		});
+		await renderPlayers();
+	}
+	async function renderPlayers() {
+		const players = await fetchData(`${apiUrl}/players/`);
+		const playerList = document.getElementById("players-list");
+		const playerSelect = document.getElementById("player-select");
+		const substitutePlayerSelect = document.getElementById("substitute-player-select");
+		substitutePlayerSelect.innerHTML = '<option value="">Выберите игрока</option>'; // Reset select options
+		playerList.innerHTML = '';
+		playerSelect.innerHTML = '<option value="">Выберите игрока</option>'; // Reset select options
+		players.forEach(player => {
+			const div = document.createElement("div");
+			div.classList.add("list-item");
+			div.innerHTML = `
+          <strong>${player.full_name}</strong>&nbsp(${player.position}), id: ${player.id}
+          <button onclick="deletePlayer('${player.id}')">Delete</button>
+        `;
+			playerList.appendChild(div);
+			// Add player to select options
+			const option = document.createElement("option");
+			option.value = player.id;
+			option.textContent = player.full_name;
+			playerSelect.appendChild(option);
+			const substituteOption = document.createElement("option");
+			substituteOption.value = player.id;
+			substituteOption.textContent = player.full_name;
+			substitutePlayerSelect.appendChild(substituteOption);
+		});
+	}
+	async function deletePlayer(id) {
+		await fetchData(`${apiUrl}/players/${id}`, {
+			method: 'DELETE'
+		});
+		await renderPlayers();
+	}
+	// Teams
+	async function createTeam() {
+		const name = document.getElementById("team-name").value;
+		const city = document.getElementById("team-city").value;
+		const coach = document.getElementById("team-coach").value;
+		const startingLineup = document.getElementById("team-starting-lineup").value.split(",");
+		const substitutes = document.getElementById("team-substitutes").value.split(",");
+		const team = {
+			name, city, coach, starting_lineup: startingLineup, substitutes
+		};
+		await fetchData(`${apiUrl}/teams/`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(team)
+		});
+		await renderTeams();
+	}
+	async function renderTeams() {
+		const teams = await fetchData(`${apiUrl}/teams/`);
+		const teamList = document.getElementById("teams-list");
+		teamList.innerHTML = '';
+		teams.forEach(team => {
+			const div = document.createElement("div");
+			div.classList.add("list-item");
+			div.innerHTML = `
+          <strong>${team.name}</strong> (${team.city}, Coach: ${team.coach}), id: ${team.id}
+          <button onclick="deleteTeam('${team.id}')">Delete</button>
+          `;
+			teamList.appendChild(div);
+		});
+	}
+	// Добавление игрока в запасные
+	function addPlayerToSubstitutes() {
+		const substitutePlayerSelect = document.getElementById("substitute-player-select");
+		const selectedPlayerId = substitutePlayerSelect.value;
+		const substitutesInput = document.getElementById("team-substitutes");
+		if(selectedPlayerId) {
+			const currentSubstitutes = substitutesInput.value.split(",").filter(Boolean);
+			if(!currentSubstitutes.includes(selectedPlayerId)) {
+				currentSubstitutes.push(selectedPlayerId);
+				substitutesInput.value = currentSubstitutes.join(",");
+			} else {
+				alert("Этот игрок уже в запасе.");
+			}
+		} else {
+			alert("Пожалуйста, выберите игрока.");
+		}
+	}
+	async function deleteTeam(id) {
+		await fetchData(`${apiUrl}/teams/${id}`, {
+			method: 'DELETE'
+		});
+		await renderTeams();
+	}
+	// Add player
+	// Добавление игрока в стартовый состав
+	function addPlayerToStartingLineup() {
+		const playerSelect = document.getElementById("player-select");
+		const selectedPlayerId = playerSelect.value;
+		const startingLineupInput = document.getElementById("team-starting-lineup");
+		if(selectedPlayerId) {
+			const currentLineup = startingLineupInput.value.split(",").filter(Boolean);
+			if(!currentLineup.includes(selectedPlayerId)) {
+				currentLineup.push(selectedPlayerId);
+				startingLineupInput.value = currentLineup.join(",");
+			} else {
+				alert("Этот игрок уже в стартовом составе.");
+			}
+		} else {
+			alert("Пожалуйста, выберите игрока.");
+		}
+	}
+	// Matches
+	async function createMatch() {
+		const date = document.getElementById("match-date").value;
+		const teamIds = document.getElementById("match-teams").value.split(",");
+		const score = document.getElementById("match-score").value;
+		const goals = JSON.parse(document.getElementById("match-goals").value || '[]');
+		const match = {
+			date, team_ids: teamIds, score, goals
+		};
+		await fetchData(`${apiUrl}/matches/`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(match)
+		});
+		await renderMatches();
+	}
+	async function renderMatches() {
+		const matches = await fetchData(`${apiUrl}/matches/`);
+		const matchList = document.getElementById("matches-list");
+		matchList.innerHTML = '';
+		matches.forEach(match => {
+			const div = document.createElement("div");
+			div.classList.add("list-item");
+			div.innerHTML = `
+          <strong>Матч на ${match.date}</strong> (Счёт: ${match.score})
+          <button onclick="deleteMatch('${match.id}')">Delete</button>
+        `;
+			matchList.appendChild(div);
+		});
+	}
+	async function deleteMatch(id) {
+		await fetchData(`${apiUrl}/matches/${id}`, {
+			method: 'DELETE'
+		});
+		await renderMatches();
+	}
+	// Инициализация списков при загрузке страницы
+	refreshLists();
+	</script>
+</body>
+
+</html>

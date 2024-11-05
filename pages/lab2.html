@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мониторинг спортивных соревнований</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 98%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        select {
+            width: 100%;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #e7f3fe;
+        }
+    </style>
+</head>
+<body>
+
+    
+    <div class="container">
+    <h1>Мониторинг спортивных соревнований</h1>
+    <h2>Добавить спортсмена</h2>
+    <input type="text" id="athleteName" placeholder="Имя спортсмена">
+    <button onclick="addAthlete()">Добавить</button>
+
+    <h2>Добавить судью</h2>
+    <input type="text" id="judgeName" placeholder="Имя судьи">
+    <button onclick="addJudge()">Добавить</button>
+
+    <h2>Обновить баллы</h2>
+    <select id="judgeSelect"></select>
+    <select id="athleteSelect"></select>
+    <input type="number" id="scoreInput" placeholder="Баллы">
+    <button onclick="updateScore()">Сохранить баллы</button>
+
+    <h2>Рейтинг спортсменов</h2>
+    <div id="rankings" class="result"></div>
+</div>
+
+
+<script>
+    const apiUrl = 'http://localhost/api/v1';
+    const socket = new WebSocket("ws://localhost/api/v1/ws/rankings");
+
+    socket.onmessage = function(event) {
+        const rankings = JSON.parse(event.data);
+        const rankingsDiv = document.getElementById('rankings');
+        rankingsDiv.innerHTML = rankings.map(r => `<div>${r.name}: ${r.score}</div>`).join('');
+    };
+
+    async function addAthlete() {
+        const name = document.getElementById('athleteName').value;
+        const response = await fetch(`${apiUrl}/athletes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name })
+        });
+        const result = await response.json();
+        document.getElementById('athleteName').value = '';
+        await loadAthletes();
+    }
+
+    async function addJudge() {
+        const name = document.getElementById('judgeName').value;
+        const response = await fetch(`${apiUrl}/judges`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name })
+        });
+        const result = await response.json();
+        alert(result.message);
+        document.getElementById('judgeName').value = '';
+        await loadJudges();
+    }
+
+    async function updateScore() {
+        const judge = document.getElementById('judgeSelect').value;
+        const athlete = document.getElementById('athleteSelect').value;
+        const score = document.getElementById('scoreInput').value;
+
+        const response = await fetch(`${apiUrl}/scores`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ judge, athlete, score: parseInt(score) })
+        });
+        const result = await response.json();
+        document.getElementById('scoreInput').value = '';
+    }
+
+    async function loadAthletes() {
+        const response = await fetch(`${apiUrl}/athletes`);
+        const athletes = await response.json();
+        const athleteSelect = document.getElementById('athleteSelect');
+        athleteSelect.innerHTML = athletes.map(a => `<option value="${a}">${a}</option>`).join('');
+    }
+
+    async function loadJudges() {
+        const response = await fetch(`${apiUrl}/judges`);
+        const judges = await response.json();
+        const judgeSelect = document.getElementById('judgeSelect');
+        judgeSelect.innerHTML = judges.map(j => `<option value="${j}">${j}</option>`).join('');
+    }
+
+    // Инициализация страницы
+    async function init() {
+        await loadAthletes();
+        await loadJudges();
+    }
+
+    // Запускаем инициализацию при загрузке страницы
+    window.onload = init;
+</script>
+
+
+</body>
+</html>

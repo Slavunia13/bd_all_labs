@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Футбольный мониторинг</title>
+	<style>
+		h1,
+		h2 {
+			color: #4CAF50;
+		}
+		
+		label {
+			display: block;
+			margin: 10px 0 5px;
+			font-weight: bold;
+		}
+		
+		input,
+		select {
+			width: 98%;
+			padding: 10px;
+			margin-bottom: 20px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			border-color: #4CAF50;
+		}
+		
+		select {
+			width: 100%;
+		}
+		
+		input:focus,
+		select:focus {
+			outline: none;
+			border: 2px solid #ccc;
+			border-color: #45a049;
+		}
+		
+		button {
+			padding: 10px 15px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			transition: background-color 0.3s;
+		}
+		
+		button:hover {
+			background-color: #45a049;
+		}
+		
+		.container {
+			max-width: 1000px;
+			margin: auto;
+			background: white;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+		}
+		</style>
+    <script>
+        async function searchPlayers() {
+            const field = document.getElementById("playerField").value;
+            const operator = document.getElementById("playerOperator").value;
+            const value = document.getElementById("playerValue").value;
+            const response = await fetch(`/api/v1/search/players?field=${field}&operator=${operator}&value=${value}`);
+            const data = await response.json();
+            document.getElementById("playerResults").innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function searchTeams() {
+            const field = document.getElementById("teamField").value;
+            const operator = document.getElementById("teamOperator").value;
+            const value = document.getElementById("teamValue").value;
+            const response = await fetch(`/api/v1/search/teams?field=${field}&operator=${operator}&value=${value}`);
+            const data = await response.json();
+            document.getElementById("teamResults").innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function searchMatches() {
+            const field = document.getElementById("matchField").value;
+            const operator = document.getElementById("matchOperator").value;
+            const value = document.getElementById("matchValue").value;
+            const response = await fetch(`/api/v1/search/matches?field=${field}&operator=${operator}&value=${value}`);
+            const data = await response.json();
+            document.getElementById("matchResults").innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function aggregateSearch() {
+            const query = document.getElementById("aggregateQuery").value;
+            const response = await fetch(`/api/v1/search?query=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            document.getElementById("aggregateResults").innerText = JSON.stringify(data, null, 2);
+        }
+    </script>
+</head>
+<body>
+	<div class="container">
+    <h1>Футбольный мониторинг: Поиск и Агрегация</h1>
+
+    <!-- Форма поиска игроков -->
+    <section>
+        <h2>Поиск игроков</h2>
+        <label for="playerField">Поле:</label>
+        <input type="text" id="playerField" placeholder="goals">
+        
+        <label for="playerOperator">Оператор:</label>
+        <select id="playerOperator">
+            <option value=">">></option>
+            <option value=">=">>=</option>
+            <option value="=">=</option>
+            <option value="<="><=</option>
+            <option value="<"><</option>
+        </select>
+        
+        <label for="playerValue">Значение:</label>
+        <input type="text" id="playerValue" placeholder="1">
+        
+        <button onclick="searchPlayers()">Искать</button>
+        <pre id="playerResults"></pre>
+    </section>
+
+    <!-- Форма поиска команд -->
+    <section>
+        <h2>Поиск команд</h2>
+        <label for="teamField">Поле:</label>
+        <input type="text" id="teamField" placeholder="city">
+        
+        <label for="teamOperator">Оператор:</label>
+        <select id="teamOperator">
+            <option value=">">></option>
+            <option value=">=">>=</option>
+            <option value="=">=</option>
+            <option value="<="><=</option>
+            <option value="<"><</option>
+        </select>
+        
+        <label for="teamValue">Значение:</label>
+        <input type="text" id="teamValue" placeholder="Москва">
+        
+        <button onclick="searchTeams()">Искать</button>
+        <pre id="teamResults"></pre>
+    </section>
+
+    <!-- Форма поиска матчей -->
+    <section>
+        <h2>Поиск матчей</h2>
+        <label for="matchField">Поле:</label>
+        <input type="text" id="matchField" placeholder="date">
+        
+        <label for="matchOperator">Оператор:</label>
+        <select id="matchOperator">
+            <option value=">">></option>
+            <option value=">=">>=</option>
+            <option value="=">=</option>
+            <option value="<="><=</option>
+            <option value="<"><</option>
+        </select>
+        
+        <label for="matchValue">Значение:</label>
+        <input type="text" id="matchValue" placeholder="2024-11-05">
+        
+        <button onclick="searchMatches()">Искать</button>
+        <pre id="matchResults"></pre>
+    </section>
+
+    <!-- Форма агрегационного поиска -->
+    <section>
+        <h2>Агрегационный поиск</h2>
+        <label for="aggregateQuery">Запрос:</label>
+        <input type="text" id="aggregateQuery" placeholder="Получить количество футболистов, забивших более 2 голов">
+        
+        <button onclick="aggregateSearch()">Выполнить</button>
+        <pre id="aggregateResults"></pre>
+    </section>
+
+</div>
+</body>
+</html>
