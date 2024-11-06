@@ -14,6 +14,7 @@ from app.endpoints import listOfRoutes
 
 from app.db.connection import redis_manager
 from app.db.connection import mongo_manager
+from app.db.connection import neo4j_manager
 
 logger = getLogger(__name__)
 
@@ -80,12 +81,14 @@ app = getApp()
 async def startup_event():
     await redis_manager.connect()
     await mongo_manager.connect()
+    await neo4j_manager.connect()
 
 # Отключение от Redis при завершении приложения
 @app.on_event("shutdown")
 async def shutdown_event():
     await redis_manager.disconnect()
     await mongo_manager.disconnect()
+    await neo4j_manager.disconnect()
 
 
 if __name__ == "__main__":  # pragma: no cover

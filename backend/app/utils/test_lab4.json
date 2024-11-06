@@ -1,99 +1,177 @@
 [
     {
-        "product_name": "Смартфон XYZ",
-        "manufacturer": "XYZ Corp",
-        "price": 599.99,
-        "features": {
-            "screen_size": "6.5 дюймов",
-            "battery_capacity": "4500 мАч",
-            "camera": "48 МП",
-            "storage_options": ["64 ГБ", "128 ГБ", "256 ГБ"]
+        "name": "Laptop Model X",
+        "manufacturer": "TechCorp",
+        "price": 1200,
+        "category": "electronics",
+        "specifications": {
+            "color": "Silver",
+            "other_specs": {
+                "processor": "Intel i7",
+                "ram": "16GB",
+                "storage": "512GB SSD"
+            }
         },
-        "customers": [
+        "purchases": [
             {
-                "name": "Иван Иванов",
-                "purchase_date": "2023-10-01",
-                "review": "Отличный телефон, рекомендую!",
-                "delivery_service": "СДЭК"
+                "buyer_name": "Alice Johnson",
+                "purchase_date": "2024-10-02",
+                "review": "Great laptop for work and play!",
+                "delivery_service": "FastDelivery"
             },
             {
-                "name": "Мария Петрова",
-                "purchase_date": "2023-10-05",
-                "review": "Хорошая камера, но батарея могла бы быть лучше.",
-                "delivery_service": "Почта России"
+                "buyer_name": "Bob Brown",
+                "purchase_date": "2024-11-01",
+                "review": "Solid performance.",
+                "delivery_service": "ExpressShipping"
             }
         ]
     },
     {
-        "product_name": "Ноутбук ABC",
-        "manufacturer": "ABC Inc",
-        "price": 1099.99,
-        "features": {
-            "screen_size": "15.6 дюймов",
-            "processor": "Intel i7",
-            "ram": "16 ГБ",
-            "storage": "512 ГБ SSD"
+        "name": "Smartphone Pro",
+        "manufacturer": "MobileCo",
+        "price": 800,
+        "category": "electronics",
+        "specifications": {
+            "color": "Black",
+            "other_specs": {
+                "screen_size": "6.5 inches",
+                "battery": "4000mAh",
+                "camera": "12MP"
+            }
         },
-        "customers": [
+        "purchases": [
             {
-                "name": "Сергей Смирнов",
-                "purchase_date": "2023-09-20",
-                "review": "Отличная производительность для работы.",
-                "delivery_service": "Доставка 24"
+                "buyer_name": "John Smith",
+                "purchase_date": "2024-09-12",
+                "review": "Excellent camera quality!",
+                "delivery_service": "FastDelivery"
             }
         ]
     },
     {
-        "product_name": "Умные часы QRS",
-        "manufacturer": "QRS Tech",
-        "price": 199.99,
-        "features": {
-            "water_resistant": true,
-            "battery_life": "7 дней",
-            "compatible_os": ["iOS", "Android"]
+        "name": "Office Desk",
+        "manufacturer": "FurniCraft",
+        "price": 250,
+        "category": "furniture",
+        "specifications": {
+            "color": "Brown",
+            "other_specs": {
+                "material": "Wood",
+                "dimensions": "120x60x75 cm"
+            }
         },
-        "customers": [
+        "purchases": [
             {
-                "name": "Анна Кузнецова",
-                "purchase_date": "2023-10-10",
-                "review": "Удобные и стильные часы.",
-                "delivery_service": "Boxberry"
+                "buyer_name": "Clara Dane",
+                "purchase_date": "2024-08-14",
+                "review": "Perfect for my home office.",
+                "delivery_service": "HomeCourier"
             }
         ]
     },
     {
-        "product_name": "Наушники DEF",
-        "manufacturer": "DEF Audio",
-        "price": 89.99,
-        "features": {
-            "type": "беспроводные",
-            "battery_life": "20 часов",
-            "noise_cancellation": true
+        "name": "Ergonomic Chair",
+        "manufacturer": "FurniCraft",
+        "price": 180,
+        "category": "furniture",
+        "specifications": {
+            "color": "Black",
+            "other_specs": {
+                "material": "Mesh",
+                "adjustable_height": true
+            }
         },
-        "customers": [
+        "purchases": [
             {
-                "name": "Дмитрий Васильев",
-                "purchase_date": "2023-10-15",
-                "review": "Отличное качество звука!",
-                "delivery_service": "СДЭК"
+                "buyer_name": "Alice Johnson",
+                "purchase_date": "2024-07-20",
+                "review": "Very comfortable for long hours.",
+                "delivery_service": "QuickShip"
             }
         ]
     },
     {
-        "product_name": "Кофеварка GHI",
-        "manufacturer": "GHI Home",
-        "price": 149.99,
-        "features": {
-            "capacity": "1.5 литра",
-            "type": "капельная",
-            "auto_shutdown": true
+        "name": "Men's Jacket",
+        "manufacturer": "StyleWear",
+        "price": 120,
+        "category": "clothing",
+        "specifications": {
+            "color": "Blue",
+            "other_specs": {
+                "size": "L",
+                "material": "Polyester"
+            }
         },
-        "customers": [
+        "purchases": [
             {
-                "name": "Елена Федорова",
-                "purchase_date": "2023-10-12",
-                "review": "Готовит отличный кофе, очень довольна.",
-                "delivery_service": "Почта России"
+                "buyer_name": "Bob Brown",
+                "purchase_date": "2024-11-05",
+                "review": "Warm and comfortable.",
+                "delivery_service": "FashionExpress"
+            }
+        ]
+    },
+    {
+        "name": "Women's T-shirt",
+        "manufacturer": "StyleWear",
+        "price": 25,
+        "category": "clothing",
+        "specifications": {
+            "color": "Red",
+            "other_specs": {
+                "size": "M",
+                "material": "Cotton"
+            }
+        },
+        "purchases": [
+            {
+                "buyer_name": "Clara Dane",
+                "purchase_date": "2024-10-22",
+                "review": "Great fit and color.",
+                "delivery_service": "FashionExpress"
+            }
+        ]
+    },
+    {
+        "name": "Microwave Oven",
+        "manufacturer": "HomeTech",
+        "price": 100,
+        "category": "kitchen_appliances",
+        "specifications": {
+            "color": "White",
+            "other_specs": {
+                "capacity": "20L",
+                "power": "800W"
+            }
+        },
+        "purchases": [
+            {
+                "buyer_name": "John Smith",
+                "purchase_date": "2024-10-10",
+                "review": "Heats up food quickly.",
+                "delivery_service": "ApplianceDelivery"
+            }
+        ]
+    },
+    {
+        "name": "Coffee Maker",
+        "manufacturer": "BrewMaster",
+        "price": 60,
+        "category": "kitchen_appliances",
+        "specifications": {
+            "color": "Black",
+            "other_specs": {
+                "capacity": "1.5L",
+                "power": "900W"
+            }
+        },
+        "purchases": [
+            {
+                "buyer_name": "Alice Johnson",
+                "purchase_date": "2024-09-18",
+                "review": "Makes great coffee.",
+                "delivery_service": "QuickShip"
             }
         ]
     }

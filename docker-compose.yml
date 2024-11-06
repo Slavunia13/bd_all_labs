@@ -13,6 +13,22 @@ services:
     networks:
       - my_network
 
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j_db
+    environment:
+      NEO4J_AUTH: ${NEO4J_AUTH}
+      NEO4J_dbms_memory_heap_initial__size: ${NEO4J_dbms_memory_heap_initial__size}
+      NEO4J_dbms_memory_heap_max__size: ${NEO4J_dbms_memory_heap_max__size}
+    volumes:
+      - ./data/neo4j_data:/data
+      - ./data/neo4j_logs:/logs  # Хранение логов
+    ports:
+      - "${NEO4J_PORT_HTTP}:${NEO4J_PORT_HTTP}"  # Порт для HTTP
+      - "${NEO4J_PORT_BOLT}:${NEO4J_PORT_BOLT}"  # Порт для Bolt
+    networks:
+      - my_network
+
   mongo:
     image: mongo:latest
     container_name: ${MONGO_NAME}

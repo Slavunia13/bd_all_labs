@@ -3,57 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>В разработке</title>
+    <title>Обработка забросов</title>
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 10vh;
-            height: 100vh;
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
         }
-        .container{
+        h1, h2 {
+            color: #4CAF50;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 98%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-color: #4CAF50;
+        }
+        select {
+            width: 100%;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border: 2px solid #ccc;
+            border-color: #45a049;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 720px;
-            text-align: center;
         }
-        h1 {
-            color: #4CAF50;
-            margin-bottom: 20px;
-        }
-        p {
-            font-size: 18px;
-            color: #555;
-            text-align: center;
-            margin: 0 20px;
-        }
-        .back-button {
+        #result {
             margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: white;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .back-button:hover {
-            background-color: #45a049;
+            border: 1px solid #ccc;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Страница в разработке</h1>
-        <p>Извините, но эта страница еще не готова. Пожалуйста, загляните позже.</p>
-        <button class="back-button" onclick="history.back()">Назад</button>
-    </div>
+<div class="container">
+<h1>Обработка забросов</h1>
+
+<label for="querySelect">Выберите запрос:</label>
+<select id="querySelect">
+    <option value="">-- Выберите запрос --</option>
+</select>
+
+<label for="paramInput1">Введите параметр 1 (если требуется):</label>
+<input type="text" id="paramInput1" placeholder="Введите параметр...">
+
+<label for="paramInput2">Введите параметр 2 (если требуется):</label>
+<input type="text" id="paramInput2" placeholder="Введите параметр...">
+
+<label for="paramInput3">Введите параметр 3 (если требуется):</label>
+<input type="text" id="paramInput3" placeholder="Введите параметр...">
+
+<button id="sendQueryButton">Отправить запрос</button>
+
+<div id="result"></div>
+</div>
+<script>
+    async function fetchQueries() {
+        const response = await fetch('http://localhost/api/v1/neo4j/labs_queries');
+        const queries = await response.json();
+        
+        const querySelect = document.getElementById('querySelect');
+        for (const [description, query] of Object.entries(queries)) {
+            const option = document.createElement('option');
+            option.value = description;
+            option.textContent = description;
+            querySelect.appendChild(option);
+        }
+    }
+
+    async function sendQuery() {
+        const querySelect = document.getElementById('querySelect');
+        const selectedQuery = querySelect.value;
+        const paramInput1 = document.getElementById('paramInput1').value;
+        const paramInput2 = document.getElementById('paramInput2').value;
+        const paramInput3 = document.getElementById('paramInput3').value;
+
+        if (!selectedQuery) {
+            alert('Пожалуйста, выберите запрос.');
+            return;
+        }
+
+        const response = await fetch('http://localhost/api/v1/neo4j/labs_queries', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query: selectedQuery, param1: paramInput1, param2: paramInput2, param3: paramInput3 }),
+        });
+
+        const result = await response.json();
+        displayResult(result);
+    }
+
+    function displayResult(result) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = ''; // Очистка предыдущего результата
+
+        if (Array.isArray(result)) {
+            if (result.length === 0) {
+                resultDiv.innerHTML = '<h2>Результат:</h2><p>Ответ пуст</p>';
+            } else {
+                resultDiv.innerHTML = '<h2>Результат:</h2>';
+                result.forEach(item => {
+                    const itemDiv = document.createElement('p');
+                    itemDiv.textContent = JSON.stringify(item, null, 2);
+                    resultDiv.appendChild(itemDiv);
+                });
+            }
+        } else {
+            resultDiv.innerHTML = '<h2>Результат:</h2><p>Ошибка</p>';
+        }
+    }
+
+    document.getElementById('sendQueryButton').addEventListener('click', sendQuery);
+
+    // Загружаем запросы при загрузке страницы
+    window.onload = fetchQueries;
+</script>
+
 </body>
 </html>

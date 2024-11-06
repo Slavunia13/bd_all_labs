@@ -21,7 +21,7 @@ class MongoManager:
             # Проверяем, существует ли пользователь
             await self.client[settings.MONGO_NAME].command("usersInfo", settings.MONGO_USER)
             print(f"Пользователь {settings.MONGO_USER} уже существует.")
-        except:
+        except Exception as e:
             if e.code == 13:  # Код ошибки 13 означает, что у вас нет прав доступа
                 print("Нет прав доступа для проверки пользователя.")
             else:

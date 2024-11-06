@@ -1,59 +1,214 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>В разработке</title>
+    <title>Store API Demo</title>
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 10vh;
-            height: 100vh;
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
         }
-        .container{
+        h1, h2 {
+            color: #4CAF50;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 98%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-color: #4CAF50;
+        }
+        select {
+            width: 100%;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border: 2px solid #ccc;
+            border-color: #45a049;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 720px;
-            text-align: center;
         }
-        h1 {
-            color: #4CAF50;
-            margin-bottom: 20px;
-        }
-        p {
-            font-size: 18px;
-            color: #555;
-            text-align: center;
-            margin: 0 20px;
-        }
-        .back-button {
+        #result {
             margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: white;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .back-button:hover {
-            background-color: #45a049;
+            border: 1px solid #ccc;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Страница в разработке</h1>
-        <p>Извините, но эта страница еще не готова. Пожалуйста, загляните позже.</p>
-        <button class="back-button" onclick="history.back()">Назад</button>
+    <h1>Демо API Магазина</h1>
+
+    <!-- Раздел Добавить Продукты -->
+    <div class="section">
+        <h2>Добавить Продукты</h2>
+        <textarea id="productsJson" rows="8" placeholder="Enter JSON array of products"></textarea>
+        <button onclick="addProducts()">Добавить Продукты</button>
     </div>
+
+    <!-- Раздел Поиск -->
+    <div class="section">
+        <h2>Поиск Продуктов</h2>
+        <label>Категория:
+            <input type="text" id="searchCategory" placeholder="Enter category (e.g., electronics)">
+        </label>
+        <button onclick="searchByCategory()">Получить Продукты по Категории</button>
+        
+        <label>Характеристики Продукта по Категории:
+            <input type="text" id="characteristicsCategory" placeholder="Enter category (e.g., furniture)">
+        </label>
+        <button onclick="getCharacteristicsByCategory()">Получить Характеристики</button>
+        
+        <label>Покупатель:
+            <input type="text" id="buyerName" placeholder="Enter buyer's name (e.g., Alice Johnson)">
+        </label>
+        <button onclick="getProductsByBuyer()">Получить Продукты по Покупателю</button>
+        
+        <label>Цвет:
+            <input type="text" id="productColor" placeholder="Enter product color (e.g., Black)">
+        </label>
+        <button onclick="getProductsByColor()">Получить Продукты по Цвету</button>
+        
+        <label>Продукт:
+            <input type="text" id="specificProduct" placeholder="Enter product name (e.g., Laptop Model X)">
+        </label>
+        <button onclick="getBuyersByProduct()">Получить Покупателей Конкретного Продукта</button>
+        
+        <label>Продукт и Служба Доставки:
+            <input type="text" id="specificProductWithService" placeholder="Enter product name">
+            <input type="text" id="deliveryServiceName" placeholder="Enter delivery service name">
+        </label>
+        <button onclick="getBuyersByProductAndService()">Получить Покупателей по Продукту и Службе Доставки</button>
+    </div>
+
+    <!-- Раздел Операции Аггрегации -->
+    <div class="section">
+        <h2>Операции Аггрегации</h2>
+        <button onclick="getTotalSalesAmount()">Получить Общую Сумму Продаж</button>
+        <button onclick="getProductsCountByCategory()">Получить Количество Продуктов по Категории</button>
+    </div>
+
+    <!-- Раздел Результаты -->
+    <div class="results" id="results"></div>
+
+    </div>
+
+
+    <script>
+        const apiUrl = "http://localhost/api/v1";
+
+        async function addProducts() {
+            const productsJson = document.getElementById("productsJson").value;
+            try {
+                const response = await fetch(`${apiUrl}/products`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: productsJson
+                });
+                const result = await response.json();
+                displayResult(result, "Products added successfully!");
+            } catch (error) {
+                console.error("Error adding products:", error);
+                displayResult(null, "Error adding products");
+            }
+        }
+
+        async function searchByCategory() {
+            const category = document.getElementById("searchCategory").value;
+            const response = await fetch(`${apiUrl}/products/by-category/${category}`);
+            const result = await response.json();
+            displayResult(result, `Products in category "${category}"`);
+        }
+
+        async function getCharacteristicsByCategory() {
+            const category = document.getElementById("characteristicsCategory").value;
+            const response = await fetch(`${apiUrl}/products/characteristics/${category}`);
+            const result = await response.json();
+            displayResult(result, `Characteristics of products in category "${category}"`);
+        }
+
+        async function getProductsByBuyer() {
+            const buyer = document.getElementById("buyerName").value;
+            const response = await fetch(`${apiUrl}/products/by-buyer/${buyer}`);
+            const result = await response.json();
+            displayResult(result, `Products bought by "${buyer}"`);
+        }
+
+        async function getProductsByColor() {
+            const color = document.getElementById("productColor").value;
+            const response = await fetch(`${apiUrl}/products/by-color/${color}`);
+            const result = await response.json();
+            displayResult(result, `Products with color "${color}"`);
+        }
+
+        async function getBuyersByProduct() {
+            const product = document.getElementById("specificProduct").value;
+            const response = await fetch(`${apiUrl}/products/${product}/buyers`);
+            const result = await response.json();
+            displayResult(result, `Buyers of "${product}"`);
+        }
+
+        async function getBuyersByProductAndService() {
+            const product = document.getElementById("specificProductWithService").value;
+            const service = document.getElementById("deliveryServiceName").value;
+            const response = await fetch(`${apiUrl}/products/${product}/buyers-by-delivery?delivery_service=${service}`);
+            const result = await response.json();
+            displayResult(result, `Buyers of "${product}" with delivery by "${service}"`);
+        }
+
+        async function getTotalSalesAmount() {
+            const response = await fetch(`${apiUrl}/sales/total`);
+            const result = await response.json();
+            displayResult(result, "Total sales amount");
+        }
+
+        async function getProductsCountByCategory() {
+            const response = await fetch(`${apiUrl}/products/countByCategory`);
+            const result = await response.json();
+            displayResult(result, "Product count by category");
+        }
+
+        function displayResult(data, message) {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = `<h3>${message}</h3>`;
+            if (data && Array.isArray(data)) {
+                data.forEach(item => {
+                    resultsDiv.innerHTML += `<div class="result-item">${JSON.stringify(item)}</div>`;
+                });
+            } else {
+                resultsDiv.innerHTML += `<div class="result-item">${JSON.stringify(data)}</div>`;
+            }
+        }
+    </script>
 </body>
 </html>
